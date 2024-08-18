@@ -26,7 +26,11 @@ class CategoryColumn extends StatelessWidget {
           Expanded(
             child: ListView.builder(
               itemCount: tasks.length,
-              itemBuilder: (context, index) => TaskCard(task: tasks[index]),
+              itemBuilder: (context, index) {
+                print('=============================Building task card for ${tasks[index]}'); // Tambahkan log ini
+                return TaskCard(task: tasks[index]);
+              },
+              
             ),
           ),
           ElevatedButton(
@@ -40,48 +44,48 @@ class CategoryColumn extends StatelessWidget {
     );
   }
 
-  void _showAddTaskDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) {
-        final TextEditingController _titleController = TextEditingController();
-        final TextEditingController _descriptionController =
-            TextEditingController();
-        return AlertDialog(
-          title: Text('Add Task'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(
-                controller: _titleController,
-                decoration: InputDecoration(labelText: 'Title'),
-              ),
-              TextField(
-                controller: _descriptionController,
-                decoration: InputDecoration(labelText: 'Description'),
-              ),
-            ],
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: Text('Cancel'),
+ void _showAddTaskDialog(BuildContext context) {
+  showDialog(
+    context: context,
+    builder: (BuildContext dialogContext) {  // Gunakan konteks dialog yang baru
+      final TextEditingController _titleController = TextEditingController();
+      final TextEditingController _descriptionController = TextEditingController();
+      return AlertDialog(
+        title: Text('Add Task'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              controller: _titleController,
+              decoration: InputDecoration(labelText: 'Title'),
             ),
-            ElevatedButton(
-              onPressed: () async {
-                await context.read<KanbanCubit>().createTask(
-                      _titleController.text,
-                      _descriptionController.text
-                    );
-                Navigator.pop(context);
-                // Memaksa widget untuk membangun ulang
-                // setState(() {});
-              },
-              child: Text('Add'),
+            TextField(
+              controller: _descriptionController,
+              decoration: InputDecoration(labelText: 'Description'),
             ),
           ],
-        );
-      },
-    );
-  }
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(),  // Gunakan konteks dialog
+            child: Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              if (_titleController.text.isNotEmpty && _descriptionController.text.isNotEmpty) {
+                Navigator.of(dialogContext).pop();  // Tutup dialog sebelum membuat tugas
+                await context.read<KanbanCubit>().createTask(
+                  _titleController.text,
+                  _descriptionController.text,
+                  category.id,
+                );
+              }
+            },
+            child: Text('Add'),
+          ),
+        ],
+      );
+    },
+  );
+}
 }

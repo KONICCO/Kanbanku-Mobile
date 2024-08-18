@@ -37,7 +37,9 @@ class KanbanCubit extends Cubit<KanbanState> {
   Future<void> loadData() async {
     try {
       final tasks = await _taskRepository.getTasks();
+      print('Loaded tasks: $tasks'); // Tambahkan log ini
       final categories = await _categoryRepository.getCategories();
+      print('Loaded categories: $categories'); // Tambahkan log ini
       emit(KanbanState(
         tasks: tasks,
         categories: categories,
@@ -73,29 +75,29 @@ class KanbanCubit extends Cubit<KanbanState> {
     await loadData();
   }
 
-  Future<void> createTask(String title, String description) async {
+  Future<void> createTask(String title, String description, int categoryId) async {
     try {
-      final response = await _taskRepository.createTask(title, description);
+      final response = await _taskRepository.createTask(title,
+          description,categoryId); //Raw API Response: {message: success create new task, task_id: 27, user_id: 1}
       print("Raw API Response: $response"); // Tambahkan logging ini
-      print("Raw API Response: ${response['user_id']}"); // Tambahkan logging ini
+      print(
+          "Raw API Response: ${response['user_id']}"); // Tambahkan logging ini
 
       // Periksa apakah respons memiliki semua field yang diperlukan
-      if ( response['user_id'] == null) {
+      if (response['message'] == 'success create new task' &&
+          response['task_id'] != null &&
+          response['user_id'] != null) {
+        await loadData();
+        print('State after createTask: ${state.tasks}'); 
+        emit(KanbanState(
+          tasks: state.tasks,
+          categories: state.categories,
+          userauth: state.userauth,
+          error: null,
+        ));
+      } else {
         throw Exception('Invalid task data received from API');
       }
-      // Convert Map<String, dynamic> to Task object
-      // final newTask = Task.fromJson(response);
-      // print("HASIL CREATE ${newTask}");
-
-      // print("New Task Object: $newTask");
-      // print("HASIL CREATE ${state.tasks}");
-      emit(KanbanState(
-        tasks: state.tasks,
-        categories: state.categories,
-        userauth: state.userauth,
-        error: null,
-      ));
-      await loadData();
     } catch (e) {
       print('Error in createTask: $e'); // Tambahkan logging ini
       emit(KanbanState(

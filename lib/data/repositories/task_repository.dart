@@ -9,6 +9,7 @@ class TaskRepository {
   Future<List<Task>> getTasks() async {
     try {
       final response = await _dio.get('/api/v1/tasks/get');
+      print('Raw getTasks Response: ${response.data}'); // Tambahkan log ini
       if (response.statusCode == 200) {
         if (response.data == null) {
           return [];
@@ -60,13 +61,14 @@ class TaskRepository {
   }
 
   Future<Map<String, dynamic>> createTask(
-      String title, String description) async {
+      String title, String description, int categoryId) async {
     try {
       final response = await _dio.post('/api/v1/tasks/create', data: {
         'title': title,
         'description': description,
+        'category_id': categoryId,
       });
-      print('Raw API Response: ${response.data}'); // Tambahkan logging ini
+      print('Raw API Response: ${response.data}');
       if (response.statusCode == 200 || response.statusCode == 201) {
         if (response.data is Map<String, dynamic>) {
           return response.data;
