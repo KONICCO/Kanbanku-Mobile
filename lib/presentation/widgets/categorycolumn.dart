@@ -27,16 +27,20 @@ class CategoryColumn extends StatelessWidget {
             child: ListView.builder(
               itemCount: tasks.length,
               itemBuilder: (context, index) {
-                print('=============================Building task card for ${tasks[index]}'); // Tambahkan log ini
+                print(
+                    '=============================Building task card for ${tasks[index]}'); // Tambahkan log ini
                 return TaskCard(task: tasks[index]);
               },
-              
             ),
           ),
           ElevatedButton(
             onPressed: () {
               _showAddTaskDialog(context);
             },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.white, // Warna latar belakang tombol
+              foregroundColor: Colors.black, // Warna teks tombol
+            ),
             child: Text('Add Task'),
           ),
         ],
@@ -44,48 +48,57 @@ class CategoryColumn extends StatelessWidget {
     );
   }
 
- void _showAddTaskDialog(BuildContext context) {
-  showDialog(
-    context: context,
-    builder: (BuildContext dialogContext) {  // Gunakan konteks dialog yang baru
-      final TextEditingController _titleController = TextEditingController();
-      final TextEditingController _descriptionController = TextEditingController();
-      return AlertDialog(
-        title: Text('Add Task'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            TextField(
-              controller: _titleController,
-              decoration: InputDecoration(labelText: 'Title'),
+  void _showAddTaskDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext dialogContext) {
+        // Gunakan konteks dialog yang baru
+        final TextEditingController _titleController = TextEditingController();
+        final TextEditingController _descriptionController =
+            TextEditingController();
+        return AlertDialog(
+          title: Text('Add Task'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: _titleController,
+                decoration: InputDecoration(labelText: 'Title'),
+              ),
+              TextField(
+                controller: _descriptionController,
+                decoration: InputDecoration(labelText: 'Description'),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () =>
+                  Navigator.of(dialogContext).pop(), // Gunakan konteks dialog
+              child: Text('Cancel'),
             ),
-            TextField(
-              controller: _descriptionController,
-              decoration: InputDecoration(labelText: 'Description'),
+            ElevatedButton(
+              onPressed: () async {
+                if (_titleController.text.isNotEmpty &&
+                    _descriptionController.text.isNotEmpty) {
+                  Navigator.of(dialogContext)
+                      .pop(); // Tutup dialog sebelum membuat tugas
+                  await context.read<KanbanCubit>().createTask(
+                        _titleController.text,
+                        _descriptionController.text,
+                        category.id,
+                      );
+                }
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.blue, // Warna latar belakang tombol
+                foregroundColor: Colors.white, // Warna teks tombol
+              ),
+              child: Text('Add'),
             ),
           ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(dialogContext).pop(),  // Gunakan konteks dialog
-            child: Text('Cancel'),
-          ),
-          ElevatedButton(
-            onPressed: () async {
-              if (_titleController.text.isNotEmpty && _descriptionController.text.isNotEmpty) {
-                Navigator.of(dialogContext).pop();  // Tutup dialog sebelum membuat tugas
-                await context.read<KanbanCubit>().createTask(
-                  _titleController.text,
-                  _descriptionController.text,
-                  category.id,
-                );
-              }
-            },
-            child: Text('Add'),
-          ),
-        ],
-      );
-    },
-  );
-}
+        );
+      },
+    );
+  }
 }

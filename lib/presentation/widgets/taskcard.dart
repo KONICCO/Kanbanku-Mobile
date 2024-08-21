@@ -13,37 +13,51 @@ class TaskCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      child: Padding(
-        padding: EdgeInsets.all(8),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(task.title.toString(), style: TextStyle(fontWeight: FontWeight.bold)),
-            Text(task.description.toString()),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                IconButton(
-                  icon: Icon(Icons.arrow_back),
-                  onPressed: () {
-                    context.read<KanbanCubit>().updateTaskCategory(task.id, task.categoryId, false);
-                  },
-                ),
-                IconButton(
-                  icon: Icon(Icons.arrow_forward),
-                  onPressed: () {
-                    context.read<KanbanCubit>().updateTaskCategory(task.id, task.categoryId, true);
-                  },
-                ),
-                IconButton(
-                  icon: Icon(Icons.delete),
-                  onPressed: () {
-                    context.read<KanbanCubit>().deleteTask(task.id);
-                  },
-                ),
-              ],
-            ),
-          ],
+      child: Container(
+        decoration: BoxDecoration(
+          // border: Border.all(
+          //   width: 2.0, // Ketebalan border
+          // ),
+          borderRadius: BorderRadius.circular(10.0),
+          color: const Color.fromARGB(255, 255, 255, 255), // from-blue-200
+        ),
+        child: Padding(
+          padding: EdgeInsets.all(8),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(task.title.toString(),
+                  style: TextStyle(fontWeight: FontWeight.bold)),
+              Text(task.description.toString()),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  IconButton(
+                    icon: Icon(Icons.arrow_back),
+                    onPressed: () {
+                      context
+                          .read<KanbanCubit>()
+                          .updateTaskCategory(task.id, task.categoryId, false);
+                    },
+                  ),
+                  IconButton(
+                    icon: Icon(Icons.arrow_forward),
+                    onPressed: () {
+                      context
+                          .read<KanbanCubit>()
+                          .updateTaskCategory(task.id, task.categoryId, true);
+                    },
+                  ),
+                  IconButton(
+                    icon: Icon(Icons.delete),
+                    onPressed: () {
+                      context.read<KanbanCubit>().deleteTask(task.id);
+                    },
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );

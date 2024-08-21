@@ -53,6 +53,11 @@ class MyApp extends StatelessWidget {
       ],
       child: MaterialApp(
         title: 'Kanban App',
+        theme: ThemeData(
+          appBarTheme: AppBarTheme(
+            backgroundColor: Color.fromARGB(255, 255, 255, 255), // Warna bagian atas dari gradien
+          ),
+        ),
         initialRoute: '/',
         routes: {
           '/': (context) => BlocBuilder<KanbanCubit, KanbanState>(

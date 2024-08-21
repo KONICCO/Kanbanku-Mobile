@@ -30,13 +30,27 @@ class DashboardScreen extends StatelessWidget {
                 ),
               ],
             ),
-            body: state.error != null
-                ? Center(child: Text(state.error!))
-                : _buildKanbanBoard(context, state),
+            body: Container(
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    Color(0xFFBFDBFE), // from-blue-200
+                    Color(0xFFDDD6FE), // via-indigo-200
+                    Color(0xFFFBCFE8), // to-pink-200
+                  ],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+              ),
+              child: state.error != null
+                  ? Center(child: Text(state.error!))
+                  : _buildKanbanBoard(context, state),
+            ),
             floatingActionButton: FloatingActionButton(
               onPressed: () => _showAddCategoryDialog(context),
               child: Icon(Icons.add),
               tooltip: 'Add Category',
+              backgroundColor: Color.fromARGB(255, 255, 255, 255), // Sesuaikan dengan tema
             ),
           );
         },
@@ -52,7 +66,8 @@ class DashboardScreen extends StatelessWidget {
           final categoryTasks = state.tasks
               .where((task) => task.categoryId == category.id)
               .toList();
-          print('Category ${category.type} (ID: ${category.id}) has ${categoryTasks.length} tasks');
+          print(
+              'Category ${category.type} (ID: ${category.id}) has ${categoryTasks.length} tasks');
           return CategoryColumn(
             category: category,
             tasks: categoryTasks,
